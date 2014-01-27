@@ -33,7 +33,7 @@ Note that it is important to use helpers if you want the extension to do its job
 
 For Middleman to know how to handle image URLs in CSS files, the `image-url` function is necessary. This function is also used in the `get-image-url` function which will inline images for non-legacy browsers.
 
-```sass
+```scss
 .element {
   // Does not work with regular CSS
   background: url('/assets/images/background.png');
