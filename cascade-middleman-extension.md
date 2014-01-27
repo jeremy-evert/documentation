@@ -17,14 +17,17 @@ For external links, the extension returns the path unmodified. It assumes anythi
 Since the SWOSU site is currently in the global area under the subfolder `swosu`, we need to prepend `/swosu` to that given path. Below is the expected result for internal links.
 
 ```erb
-<!-- Provided code -->
+<!-- This will not be processed because it doesn’t use the helpers -->
 <img src="/assets/images/banner-students.png" alt="" id="banner-students" />
-<!-- OR using helpers -->
+
+<!-- Using helpers give the expected result -->
 <%= image_tag 'banner-students.png', alt: '', id: 'banner-students' %>
 
 <!-- Generated code on build -->
 <img src="/swosu/assets/images/banner-students.png" alt="" id="banner-students" />
 ```
+
+Note that it is important to use helpers if you want the extension to do its job.
 
 ## Internal links in CSS files
 
