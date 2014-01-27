@@ -4,9 +4,9 @@ Since [Cascade Server][cascade] can track links for you, there is a custom exten
 
 [cascade]: http://www.hannonhill.com
 
-* [External links][]
-* [Internal links][]
-* [Internal links in CSS files][]
+* [External links](#external-links)
+* [Internal links](#internal-links)
+* [Internal links in CSS files](#internal-links-in-css-files)
 
 ## External links
 
