@@ -1,8 +1,6 @@
 # Getting XHTML blocks by convention in Hannon Hill’s Cascade Server
 
-In order to reduce the amount of configuration necessary, we will find a blocks
-based on conventions. First we identify and define the conventions we wish to
-use.
+In order to reduce the amount of configuration necessary, we will find a blocks based on conventions. First we identify and define the conventions we wish to use.
 
 Let’s take the following three pages:
 
@@ -10,19 +8,11 @@ Let’s take the following three pages:
 * /swosu/academics/pharmacy/gen-info/history
 * /swosu/academics/ace/business/programs/index
 
-Looking at the first example, we would expect the history department’s page to
-show a block related to the history department if it exists, and a social
-sciences block if not. And if there is no social sciences block, then we hope
-to find either a general academics or swosu block.
+Looking at the first example, we would expect the history department’s page to show a block related to the history department if it exists, and a social sciences block if not. And if there is no social sciences block, then we hope to find either a general academics or swosu block.
 
-In the second example, we would expect to find a pharmacy block, but *not* a
-history block. Since the occasion for wanting a block for a single page and
-not a folder of pages is rare, we should just ignore the last component of the
-path when trying to determine which block is the best match.
+In the second example, we would expect to find a pharmacy block, but *not* a history block. Since the occasion for wanting a block for a single page and not a folder of pages is rare, we should just ignore the last component of the path when trying to determine which block is the best match.
 
-In the last example, let’s pretend we want a different block for pages in the
-programs folder. Since many departments have a folder called “programs,” we
-want to find a block that is specific to business.
+In the last example, let’s pretend we want a different block for pages in the programs folder. Since many departments have a folder called “programs,” we want to find a block that is specific to business.
 
 This gives us the following requirements:
 
@@ -51,8 +41,7 @@ in increasing order of priority:
 * academics-socsci-programs-history
 * swosu-academics-socsci-programs-history
 
-In this case, we will probably end up using the block named “history.” Now to
-look at the code.
+In this case, we will probably end up using the block named “history.” Now to look at the code.
 
 ```xslt
 <?xml version="1.0" encoding="utf-8"?>
@@ -64,8 +53,7 @@ look at the code.
 </xsl:stylesheet>
 ```
 
-The only thing to notice in the XML declaration is that we are using EXSLT for
-some additional functionality, namely `node-set` and `tokenize`.
+The only thing to notice in the XML declaration is that we are using EXSLT for some additional functionality, namely `node-set` and `tokenize`.
 
 ```xslt
 <xsl:template match="/system-index-block">
@@ -82,11 +70,7 @@ some additional functionality, namely `node-set` and `tokenize`.
 </xsl:template>
 ```
 
-First we capture the `system-index-block` in a variable because we will need to
-reference it later. When we call `apply-templates` on
-`calling-page/system-page/path`, we capture some XML that corresponds to the
-list of block names we defined above in a variable called `tokens`. The XML
-should look like this:
+First we capture the `system-index-block` in a variable because we will need to reference it later. When we call `apply-templates` on `calling-page/system-page/path`, we capture some XML that corresponds to the list of block names we defined above in a variable called `tokens`. The XML should look like this:
 
 ```xml
 <tokens>
@@ -108,11 +92,7 @@ should look like this:
 </tokens>
 ```
 
-Since we are working on an Index Block, we reduce the set set of blocks to
-those matching the names in tokens. The `for-each` will go through each token,
-find a matching System Block, and copy it into a variable called `matches`.
-The resulting XML is too verbose to paste below, but an abbreviated form could
-look like this:
+Since we are working on an Index Block, we reduce the set set of blocks to those matching the names in tokens. The `for-each` will go through each token, find a matching System Block, and copy it into a variable called `matches`. The resulting XML is too verbose to paste below, but an abbreviated form could look like this:
 
 ```xml
 <!-- This might correspond to a System Block named 'academics' -->
@@ -127,9 +107,7 @@ look like this:
 </block-xhtml>
 ```
 
-Finally, we reduce the set even further to contain only the last `block-xhtml`
-node of the above set, so we make a copy of the XHTML from the history block
-above.
+Finally, we reduce the set even further to contain only the last `block-xhtml` node of the above set, so we make a copy of the XHTML from the history block above.
 
 Everything else in the file is to generate the names for `tokens` above.
 
@@ -142,9 +120,7 @@ Everything else in the file is to generate the names for `tokens` above.
 </xsl:template>
 ```
 
-The above bit of code simply splits the path into its components on the slash,
-removes the last element, and stores the results in a the variable `tokens`.
-That is `/swosu/academics/socsci/programs/history/index` becomes
+The above bit of code simply splits the path into its components on the slash, removes the last element, and stores the results in a the variable `tokens`. That is `/swosu/academics/socsci/programs/history/index` becomes
 
 ```xml
 <tokens>
@@ -156,11 +132,9 @@ That is `/swosu/academics/socsci/programs/history/index` becomes
 </tokens>
 ```
 
-We then pass the set of tokens to another template that does the hyphenation
-and returns the complete set.
+We then pass the set of tokens to another template that does the hyphenation and returns the complete set.
 
-The following two templates are where the magic happens. These are both
-recursive; that is they call themselves.
+The following two templates are where the magic happens. These are both recursive; that is they call themselves.
 
 ```xlst
 <xsl:template match="tokens" mode="hyphenate">
@@ -174,9 +148,7 @@ recursive; that is they call themselves.
 </xsl:template>
 ```
 
-The first pass through the above template we remove the last element and call
-the same template again. So when we re-enter the template, the XML will look
-like:
+The first pass through the above template we remove the last element and call the same template again. So when we re-enter the template, the XML will look like:
 
 ```xml
 <tokens>
@@ -209,15 +181,9 @@ It will then remove the last element again and call the same template with
 </tokens>
 ```
 
-Because we are calling this template recursively, the last set of tokens will
-be returned ahead of the fourth set which is returned before the third set and
-so on. This is how we get the less specific items in front of the more specific
-items.
+Because we are calling this template recursively, the last set of tokens will be returned ahead of the fourth set which is returned before the third set and so on. This is how we get the less specific items in front of the more specific items.
 
-We are now to the point where we have called the template with only one token,
-we have no more tokens to remove, and we move on to the last line where we call
-the template with `mode="end-hyphenation"`. The first thing that will be passed
-to this template is the XML commented with “Fifth entry” above.
+We are now to the point where we have called the template with only one token, we have no more tokens to remove, and we move on to the last line where we call the template with `mode="end-hyphenation"`. The first thing that will be passed to this template is the XML commented with “Fifth entry” above.
 
 ```xslt
 <xsl:template match="tokens" mode="end-hyphenation">
@@ -242,30 +208,21 @@ Since there is nothing more do for this set, it will be returned as:
 <token>swosu</token>
 ```
 
-Now we have moved back up the stack by one level into the “hyphenation” mode
-with the set commented “Fourth entry” and pass it into the “end-hyphenation”
-mode.
+Now we have moved back up the stack by one level into the “hyphenation” mode with the set commented “Fourth entry” and pass it into the “end-hyphenation” mode.
 
-Since there is more than one token, we remove the *first* element and
-pass the remaining tokens into the “end-hyphenation” token. So we just called
-the template with the following set:
+Since there is more than one token, we remove the *first* element and pass the remaining tokens into the “end-hyphenation” token. So we just called the template with the following set:
 
 ```xml
 <token>academics</token>
 ```
 
-Again, we are down to one token so we return it, but now we have to do
-something with the set from “Fourth entry”, so we combine the token with
-hyphens and return:
+Again, we are down to one token so we return it, but now we have to do something with the set from “Fourth entry”, so we combine the token with hyphens and return:
 
 ```xml
 <token>swosu-academics</token>
 ```
 
-Now this is starting to look like what we want. If we take the set commented
-“Third entry,” we start with 3 items, pop of the front one, call
-`end-hyphenation`, pop off the first item to give us one token, and then start
-hypenating. This pass gives us the next three results.
+Now this is starting to look like what we want. If we take the set commented “Third entry,” we start with 3 items, pop of the front one, call `end-hyphenation`, pop off the first item to give us one token, and then start hypenating. This pass gives us the next three results.
 
 ```xml
 <token>socsci</token>
@@ -273,8 +230,7 @@ hypenating. This pass gives us the next three results.
 <token>swosu-academics-socsci</token>
 ```
 
-And we continue to move back up the stack, calling `end-hyphenation` with the
-“Second entry” we get
+And we continue to move back up the stack, calling `end-hyphenation` with the “Second entry” we get
 
 ```xml
 <token>programs</token>
@@ -283,8 +239,7 @@ And we continue to move back up the stack, calling `end-hyphenation` with the
 <toekn>swosu-academics-socsci-programs</toekn>
 ```
 
-And finally, we are back to the first set where we have the most specific
-matches.
+And finally, we are back to the first set where we have the most specific matches.
 
 ```xml
 <token>history</token>
@@ -294,6 +249,4 @@ matches.
 <toekn>swosu-academics-socsci-programs-history</toekn>
 ```
 
-We now have the complete set of possible names that can be matched which we
-used above to reduce the Index Block to the matching XHTML blocks, and finally
-took the very last, that is the most specific, XHTML block for use in the page.
+We now have the complete set of possible names that can be matched which we used above to reduce the Index Block to the matching XHTML blocks, and finally took the very last, that is the most specific, XHTML block for use in the page.
